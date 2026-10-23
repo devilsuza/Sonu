@@ -1,21 +1,19 @@
 from flask import Flask, request
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask_cors import CORS
-import eventlet
-
-# Eventlet को monkey_patch करना ज़रूरी है ताकि async काम सही से हो सके
-eventlet.monkey_patch()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'boss-super-secret-key'
 
-# CORS इनेबल कर रहे हैं ताकि आपकी गिटहब/रेंडर वाली वेबसाइट इस सर्वर से बात कर सके
+# CORS इनेबल कर रहे हैं ताकि आपकी वेबसाइट इस सर्वर से बात कर सके
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+
+# यहाँ async_mode 'gevent' कर दिया गया है (Render के एरर को फिक्स करने के लिए)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 @app.route('/')
 def index():
-    return "Boss Remote Signaling Server is Running Live!"
+    return "Boss Remote Signaling Server is Running Live with Gevent!"
 
 @socketio.on('connect')
 def test_connect():
@@ -51,7 +49,7 @@ def handle_ice(data):
 # रिमोट कंट्रोल कमांड्स (जैसे माउस क्लिक, कीबोर्ड टाइप भेजना)
 @socketio.on('remote-command')
 def handle_command(data):
-    # एडमिन जो भी कमांड भेजेगा (जैसे click x:10, y:20), वो क्लाइंट को पास हो जाएगा
+    # एडमिन जो भी कमांड भेजेगा, वो क्लाइंट को पास हो जाएगा
     emit('remote-command', data, to=data['room'], include_self=False)
 
 if __name__ == '__main__':

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusRMM | Complete Workflow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: { bg: '#0f172a', card: '#1e293b', border: '#334155' },
+                        brand: { 500: '#3b82f6', 600: '#2563eb' },
+                        client: { bg: '#f8fafc', card: '#ffffff', border: '#e2e8f0' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; overflow: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark-scroll::-webkit-scrollbar-thumb { background: #334155; }
+        
+        .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Mobile Phone Simulator wrapper */
+        .phone-mockup {
+            width: 360px; height: 720px;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 0 12px #0f172a;
+            overflow: hidden; position: relative;
+            background: #ffffff;
+        }
+        .phone-notch {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 120px; height: 25px; background: #0f172a;
+            border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; z-index: 50;
+        }
+    </style>
+</head>
+<body class="w-screen h-screen bg-dark-bg text-gray-200 antialiased relative">
+
+    <!-- ==========================================
+         VIEW 1: ADMIN DASHBOARD (DARK THEME)
+         ========================================== -->
+    <div id="view-admin" class="absolute inset-0 flex flex-col fade-in z-10">
+        <!-- Navbar -->
+        <nav class="h-16 border-b border-dark-border bg-dark-card flex items-center justify-between px-6">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-network-wired text-brand-500 text-xl"></i>
+                <span class="font-bold text-lg text-white">Nexus<span class="text-brand-500">RMM</span> Admin</span>
+            </div>
+            <button onclick="openModal('modal-invite')" class="bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-lg shadow-brand-500/20">
+                <i class="fa-solid fa-link mr-2"></i> Generate Client Link
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto p-6 md:p-8 dark-scroll">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white mb-1">Managed Devices</h2>
+                        <p class="text-gray-400 text-sm">Monitor and connect to your fleet.</p>
+                    </div>
+                </div>
+
+                <!-- Device Grid -->
+                <div id="device-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Pre-existing dummy device -->
+                    <div class="bg-dark-card border border-dark-border rounded-xl p-5 shadow-lg group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-lg bg-blue-500/10 text-brand-500 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-desktop"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white">Office-Desktop</h3>
+                                    <span class="text-xs text-gray-400">Unattended Access</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded text-[10px] font-bold bg-green-500/20 text-green-400">ONLINE</span>
+                        </div>
+                        <button onclick="startRemoteSession('Office-Desktop')" class="w-full py-2 bg-dark-bg border border-dark-border rounded-lg text-sm hover:bg-brand-600 hover:border-brand-500 hover:text-white transition-all">
+                            Connect <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==========================================
+         VIEW 2: CLIENT WEB PORTAL (LIGHT THEME)
+         ========================================== -->
+    <div id="view-client-web" class="absolute inset-0 bg-client-bg hidden flex-col items-center justify-center fade-in z-20 text-gray-800">
+        <button onclick="switchView('view-admin')" class="absolute top-6 left-6 text-gray-500 hover:text-gray-800 font-medium text-sm">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Back to Admin Simulation
+        </button>
+        
+        <div class="max-w-md w-full text-center px-6">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white shadow-xl mb-6 border border-gray-100">
+                <i class="fa-solid fa-headset text-4xl text-brand-600"></i>
+            </div>
+            <h1 class="text-3xl font-bold mb-3">IT Support Portal</h1>
+            <p class="text-gray-500 mb-8 leading-relaxed">Your IT Administrator has requested access to assist you. Please download the secure support application to proceed.</p>
+            
+            <button onclick="switchView('view-client-app')" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-4 rounded-xl shadow-lg shadow-brand-600/30 transition-all text-lg flex items-center justify-center gap-3">
+                <i class="fa-brands fa-android text-xl"></i> Download Support App
+            </button>
+            <p class="text-xs text-gray-400 mt-4"><i class="fa-solid fa-shield-halved mr-1"></i> End-to-end encrypted connection.</p>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         VIEW 3: CLIENT APP SETUP (MOBILE UI SIMULATION)
+         ========================================== -->
+    <div id="view-client-app" class="absolute inset-0 bg-gray-900 hidden flex-col items-center justify-center fade-in z-30">
+        <p class="text-white mb-4 font-medium"><i class="fa-solid fa-mobile-screen-button mr-2"></i> Client's Mobile Screen Simulation</p>
+        
+        <!-- Phone Mockup Container -->
+        <div class="phone-mockup flex flex-col text-gray-800">
+            <div class="phone-notch"></div>
+            
+            <!-- App Header -->
+            <div class="bg-brand-600 text-white pt-12 pb-6 px-6 rounded-b-3xl shadow-md shrink-0">
+                <h2 class="text-xl font-bold">Nexus Support</h2>
+                <p class="text-brand-100 text-sm mt-1">Configure Access Permissions</p>
+            </div>
+
+            <!-- App Body (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1 w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <div>
+                            <p class="text-sm font-semibold">Admin is waiting...</p>
+                            <p class="text-xs text-gray-500">Please choose how you want to share access with your IT Admin.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Access Type</h3>
+                
+                <!-- Option 1: One-Time -->
+                <label class="flex items-start gap-3 p-4 rounded-xl border-2 border-gray-200 bg-white mb-3 cursor-pointer transition-all hover:border-brand-300" id="label-onetime">
+                    <input type="radio" name="access_type" value="onetime" class="mt-1 w-5 h-5 text-brand-600 focus:ring-brand-500" onclick="togglePinUI(false)" checked>
+                    <div>
+                        <p class="font-bold text-gray-800">One-Time Session</p>
+                        <p class="text-xs text-gray-500 mt-1">Access ends immediately when the app is closed. Admin must request again.</p>
+                    </div>
+                </label>
+
+                <!-- Option 2: Unattended -->
+                <label class="flex items-start gap-3 p-4 rounded-xl border-2 border-gray-200 bg-white mb-3 cursor-pointer transition-all hover:border-brand-300" id="label-unattended">
+                    <input type="radio" name="access_type" value="unattended" class="mt-1 w-5 h-5 text-brand-600 focus:ring-brand-500" onclick="togglePinUI(true)">
+                    <div>
+                        <p class="font-bold text-gray-800">Unattended Access</p>
+                        <p class="text-xs text-gray-500 mt-1">Admin can access this device anytime using a secure PIN.</p>
+                    </div>
+                </label>
+
+                <!-- PIN Setup (Hidden by default) -->
+                <div id="pin-setup-container" class="hidden mt-2 bg-brand-50 p-4 rounded-xl border border-brand-100 fade-in">
+                    <label class="block text-sm font-bold text-brand-800 mb-2">Set Security PIN</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-3 top-3.5 text-brand-400"></i>
+                        <input type="text" id="client-pin" placeholder="1234" value="1234" maxlength="6"
+                            class="w-full bg-white border border-brand-200 text-brand-900 font-mono font-bold text-lg rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-center tracking-widest transition-colors">
+                    </div>
+                    <p class="text-[10px] text-brand-600/70 mt-2 text-center">Admin will need this PIN to connect without your permission.</p>
+                </div>
+            </div>
+
+            <!-- App Footer / Action -->
+            <div class="p-6 bg-white border-t border-gray-100 shrink-0">
+                <button onclick="confirmAndStartService()" class="w-full bg-brand-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/30 hover:bg-brand-700 active:scale-95 transition-all">
+                    Confirm & Start Service
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         VIEW 4: REMOTE SESSION (SIMULATED)
+         ========================================== -->
+    <div id="view-remote" class="absolute inset-0 bg-black hidden flex-col z-50 fade-in">
+        <div class="h-12 bg-dark-card border-b border-white/10 flex items-center justify-between px-4">
+            <div class="flex items-center gap-3 text-white">
+                <button onclick="switchView('view-admin')" class="w-8 h-8 rounded hover:bg-white/10 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-red-400"></i>
+                </button>
+                <div>
+                    <span class="font-bold text-sm block leading-none" id="remote-device-name">Client Device</span>
+                    <span class="text-[10px] text-green-400 leading-none"><i class="fa-solid fa-lock text-[8px]"></i> End-to-End Encrypted Session</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1 flex items-center justify-center bg-gray-900 relative">
+            <div class="text-center text-gray-500 animate-pulse">
+                <i class="fa-solid fa-mobile-screen text-6xl mb-4 text-brand-500/50"></i>
+                <h3 class="text-xl font-bold text-white">Live Screen View Active</h3>
+                <p>Receiving WebRTC Stream...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODALS
+         ========================================== -->
+    
+    <!-- Modal: Invite Link -->
+    <div id="modal-invite" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-dark-card border border-dark-border p-6 rounded-2xl w-full max-w-md shadow-2xl fade-in m-4">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-lg font-bold text-white">Generate Support Link</h3>
+                <button onclick="closeModal('modal-invite')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-sm text-gray-400 mb-4">Send this link to the client. When they click it, the portal will open.</p>
+            
+            <div class="flex gap-2 mb-6">
+                <input type="text" readonly value="https://nexusrmm.app/join/948-234" class="w-full bg-dark-bg border border-dark-border text-brand-400 text-sm rounded-lg px-3 py-2 font-mono outline-none">
+                <button class="bg-dark-bg border border-dark-border px-4 rounded-lg hover:text-brand-500 transition-colors"><i class="fa-regular fa-copy"></i></button>
+            </div>
+
+            <div class="border-t border-dark-border pt-5">
+                <button onclick="simulateClientClick()" class="w-full bg-white text-dark-bg font-bold py-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Simulate Client Clicking Link
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: PIN Entry -->
+    <div id="modal-pin" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-dark-card border border-dark-border p-6 rounded-2xl w-full max-w-sm shadow-2xl fade-in m-4 text-center">
+            <div class="w-16 h-16 bg-brand-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-500/20">
+                <i class="fa-solid fa-shield-halved text-2xl text-brand-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-1">Authentication Required</h3>
+            <p class="text-sm text-gray-400 mb-6">This device is configured for Unattended Access. Enter the PIN.</p>
+            
+            <input type="password" id="admin-pin-input" placeholder="Enter PIN" maxlength="6"
+                class="w-full bg-dark-bg border border-dark-border text-white text-center text-xl font-mono tracking-widest rounded-lg px-4 py-3 focus:outline-none focus:border-brand-500 mb-2">
+            
+            <p id="pin-error" class="text-red-400 text-xs hidden mb-4"><i class="fa-solid fa-circle-exclamation"></i> Incorrect PIN. Try again.</p>
+
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-pin')" class="flex-1 py-2.5 rounded-lg border border-dark-border text-gray-300 hover:bg-dark-bg transition-colors">Cancel</button>
+                <button onclick="verifyPinAndConnect()" class="flex-1 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-bold shadow-lg shadow-brand-500/20 transition-colors">Connect</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         JAVASCRIPT LOGIC
+         ========================================== -->
+    <script>
+        // Data Store
+        let savedClientPin = null; // Stores PIN if unattended is selected
+        let isUnattended = false;
+        let newDeviceName = "Client-Mobile-App";
+
+        // View Management
+        function switchView(viewId) {
+            document.querySelectorAll('body > div[id^="view-"]').forEach(v => {
+                v.classList.add('hidden');
+                v.classList.remove('flex');
+            });
+            const activeView = document.getElementById(viewId);
+            activeView.classList.remove('hidden');
+            activeView.classList.add('flex');
+        }
+
+        // Modal Management
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById(id).classList.add('flex');
+            if (id === 'modal-pin') {
+                document.getElementById('admin-pin-input').value = '';
+                document.getElementById('pin-error').classList.add('hidden');
+                document.getElementById('admin-pin-input').focus();
+            }
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
+
+        // Action: Admin generates link -> simulates client opening it
+        function simulateClientClick() {
+            closeModal('modal-invite');
+            switchView('view-client-web');
+        }
+
+        // Action: Client Mobile UI toggles PIN field
+        function togglePinUI(show) {
+            const container = document.getElementById('pin-setup-container');
+            const lblOnetime = document.getElementById('label-onetime');
+            const lblUnattended = document.getElementById('label-unattended');
+
+            if (show) {
+                container.classList.remove('hidden');
+                lblUnattended.classList.add('border-brand-500', 'bg-brand-50/50');
+                lblOnetime.classList.remove('border-brand-500', 'bg-brand-50/50');
+            } else {
+                container.classList.add('hidden');
+                lblOnetime.classList.add('border-brand-500', 'bg-brand-50/50');
+                lblUnattended.classList.remove('border-brand-500', 'bg-brand-50/50');
+            }
+        }
+        
+        // Initialize active state on load
+        togglePinUI(false); 
+
+        // Action: Client confirms settings
+        function confirmAndStartService() {
+            const accessType = document.querySelector('input[name="access_type"]:checked').value;
+            
+            if (accessType === 'unattended') {
+                isUnattended = true;
+                savedClientPin = document.getElementById('client-pin').value;
+                if(!savedClientPin) savedClientPin = "1234"; // Fallback
+            } else {
+                isUnattended = false;
+                savedClientPin = null;
+            }
+
+            // Append the new device to the Admin Dashboard
+            addNewDeviceToAdmin();
+
+            // Switch back to Admin View to see the result
+            switchView('view-admin');
+        }
+
+        // Dynamically add the new client device to the Admin grid
+        function addNewDeviceToAdmin() {
+            const grid = document.getElementById('device-grid');
+            
+            // Check if it already exists to prevent duplicates during testing
+            if(document.getElementById('dynamic-device')) {
+                document.getElementById('dynamic-device').remove();
+            }
+
+            const badgeText = isUnattended ? 'Unattended (PIN)' : 'One-Time Session';
+            const iconColor = isUnattended ? 'text-purple-500' : 'text-orange-500';
+            const bgIcon = isUnattended ? 'bg-purple-500/10' : 'bg-orange-500/10';
+
+            const cardHTML = `
+                <div id="dynamic-device" class="bg-dark-card border border-brand-500/50 rounded-xl p-5 shadow-[0_0_15px_rgba(59,130,246,0.15)] group fade-in relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-brand-500/10 rounded-bl-full z-0"></div>
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-lg ${bgIcon} ${iconColor} flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-mobile-screen"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white">Client-Mobile (New)</h3>
+                                <span class="text-xs text-gray-400">${badgeText}</span>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 rounded text-[10px] font-bold bg-green-500/20 text-green-400">ONLINE</span>
+                    </div>
+                    <button onclick="handleConnectClick()" class="relative z-10 w-full py-2 bg-brand-600 border border-brand-500 rounded-lg text-sm text-white hover:bg-brand-500 transition-all font-semibold shadow-lg shadow-brand-500/20">
+                        Connect Now <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            `;
+            
+            grid.insertAdjacentHTML('beforeend', cardHTML);
+        }
+
+        // Action: Admin clicks Connect on the new device
+        function handleConnectClick() {
+            if (isUnattended) {
+                // Requires PIN
+                openModal('modal-pin');
+            } else {
+                // One-Time session (Assumes consent was already given actively)
+                startRemoteSession('Client-Mobile (One-Time)');
+            }
+        }
+
+        // Action: Admin enters PIN
+        function verifyPinAndConnect() {
+            const enteredPin = document.getElementById('admin-pin-input').value;
+            const errorMsg = document.getElementById('pin-error');
+            
+            if (enteredPin === savedClientPin) {
+                // Success
+                closeModal('modal-pin');
+                startRemoteSession('Client-Mobile (Unattended)');
+            } else {
+                // Failed
+                errorMsg.classList.remove('hidden');
+                
+                // Shake animation for input
+                const input = document.getElementById('admin-pin-input');
+                input.style.transform = 'translateX(5px)';
+                setTimeout(() => input.style.transform = 'translateX(-5px)', 50);
+                setTimeout(() => input.style.transform = 'translateX(5px)', 100);
+                setTimeout(() => input.style.transform = 'translateX(0)', 150);
+            }
+        }
+
+        // Start Remote Session View
+        function startRemoteSession(name) {
+            document.getElementById('remote-device-name').textContent = name;
+            switchView('view-remote');
+        }
+    </script>
+</body>
+</html>
